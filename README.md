@@ -92,7 +92,7 @@ Your Neovim config can easily get cluttered with one-off helpers, commands, or s
 Add something like this to your `init.lua` or `keymaps.lua`:
 
 ```lua
-local goodies = require("goodies.utils")
+local goodies = require("goodies")
 
 vim.keymap.set("n", "<leader>ch", goodies.comment_hr, { desc = "Insert comment HR" })
 vim.keymap.set("n", "<leader>ru", goodies.code_runner, { desc = "Run current file" })

@@ -9,20 +9,10 @@ repos:
         files: \.lua$
         args: ["--config-path", ".stylua.toml"]  # Optional: if you have a stylua config
 
-  # ------------------------
-  # Markdown linting
-  # ------------------------
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: v0.13.0
+  - repo: https://github.com/biomejs/pre-commit
+    rev: v2.2.5 # Use the sha / tag you want to point at
     hooks:
-      - id: markdownlint
-        files: \.md$
-
-  # ------------------------
-  # YAML linting
-  # ------------------------
-  - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.37.1
-    hooks:
-      - id: yamllint
-        files: \.(yml|yaml)$
+      - id: biome-check
+        name: Biome code formatter
+        types: [yaml, markdown]
+        files: "\\.(yaml|yml|md)$"
