@@ -9,7 +9,6 @@
 
 local M = {}
 local fn, cmd = vim.fn, vim.cmd
-local config = require("config")
 
 -- Checks if a list contains a value.
 ---@param list table
@@ -275,56 +274,6 @@ function M.open_at_regex_101()
 	M.open_in_browser(url)
 end
 
--- Adds author details to files
-function M.add_author_details()
-	-- Define author details
 
-	local details = config.author
-
-	local author = {
-		name = details.name or "",
-		email = details.email or "",
-		github = details.github or "",
-		twitter = details.twitter or "",
-	}
-
-	local comment = get_comment_str() or ""
-
-	-- replace %s in comment string with empty
-	comment = string.format(comment, "")
-
-	-- Format the comment with author details
-	-- Get current buffer
-	local comment_details = string.format(
-		"%s Author: %s <%s>\n%s Date: %s\n%s GitHub: https://github.com/%s\n%s Twitter: https://twitter.com/%s\n",
-		comment,
-		author.name,
-		author.email,
-		comment,
-		os.date("%Y-%m-%d"), -- Add the date here using os.date() function with appropriate format
-		comment,
-		author.github,
-		comment,
-		author.twitter
-	)
-
-	local bufnr = vim.api.nvim_get_current_buf()
-	-- Get existing buffer lines
-	local existing_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-	-- Split the replacement string into lines
-	local replacement_lines = {}
-	for line in comment_details:gmatch("[^\r\n]+") do
-		table.insert(replacement_lines, line)
-	end
-
-	-- Insert the new lines at the beginning of the buffer
-	vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, replacement_lines)
-
-	-- Append the existing lines after the new lines
-	vim.api.nvim_buf_set_lines(bufnr, #replacement_lines, -1, false, existing_lines)
-
-	vim.notify("✅ Added author details")
-end
 
 return M
