@@ -61,7 +61,7 @@ Your Neovim config can easily get cluttered with one-off helpers, commands, or s
 
 ### 🧑‍💻 Author Metadata
 
-* **`M.add_author_details(details)`**
+* **`M.add_author_details()`**
   Inserts a standard comment header at the top of the file, including:
 
   * Author name
@@ -92,19 +92,12 @@ Your Neovim config can easily get cluttered with one-off helpers, commands, or s
 Add something like this to your `init.lua` or `keymaps.lua`:
 
 ```lua
-local goodies = require("goodies")
+local goodies = require("goodies.utils")
 
-vim.keymap.set("n", "<leader>ch", goodies.commentHr, { desc = "Insert comment HR" })
+vim.keymap.set("n", "<leader>ch", goodies.comment_hr, { desc = "Insert comment HR" })
 vim.keymap.set("n", "<leader>ru", goodies.code_runner, { desc = "Run current file" })
 vim.keymap.set("n", "gx", goodies.open_url, { desc = "Open URL under cursor" })
-vim.keymap.set("n", "<leader>ra", function()
-  goodies.add_author_details({
-    name = "Rubin Bhandari",
-    email = "roobin.bhandari@gmail.com",
-    github = "rubiin",
-    twitter = "RubinCodes",
-  })
-end, { desc = "Add author details" })
+vim.keymap.set("n", "<leader>yy",goodies.add_author_details, { desc = "Add author details" })
 ```
 
 ---
@@ -116,22 +109,17 @@ With **lazy.nvim**:
 ```lua
 {
   "rubiin/goodies.nvim",
-  config = function()
-    -- optional: setup your own helpers or mappings here
-  end,
+  opts = {
+	author = {
+		name = "John Doe",
+		email = "john.doe@example.com",
+		github = "johndoe",
+		twitter = "DoeTweets",
+	}
+  }
 }
 ```
 
-With **packer.nvim**:
-
-```lua
-use {
-  "rubiin/goodies.nvim",
-  config = function()
-    require("goodies")
-  end
-}
-```
 
 ---
 

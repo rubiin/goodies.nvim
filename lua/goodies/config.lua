@@ -3,7 +3,6 @@ local M = {}
 
 ---@class Goodies.config
 local defaultConfig = {
-	enabled = true,
 	author = {
 		email = "",
 		github = "",
