@@ -275,9 +275,6 @@ function M.open_at_regex_101()
 	M.open_in_browser(url)
 end
 
-
-local M = {}
-
 function M.cowboy()
   ---@type table?
   local id
