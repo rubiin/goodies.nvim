@@ -1,5 +1,5 @@
 -- vim.api.nvim_create_user_command(
--- 	"PLACEHOLDER_plugin_name_short_capitalized",
--- 	function() require("PLACEHOLDER_plugin_name_short").FUNCTION_NAME() end,
+-- 	"Goodies",
+-- 	function() require("goodies").FUNCTION_NAME() end,
 -- 	{}
 -- )

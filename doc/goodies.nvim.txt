@@ -3,7 +3,7 @@
 ==============================================================================
 Table of Contents                             *goodies.nvim-table-of-contents*
 
-1. PLACEHOLDER_plugin_name              |goodies.nvim-placeholder_plugin_name|
+1. goodies.nvim              |goodies.nvim-placeholder_plugin_name|
   - Features                   |goodies.nvim-placeholder_plugin_name-features|
   - Installation           |goodies.nvim-placeholder_plugin_name-installation|
   - Configuration         |goodies.nvim-placeholder_plugin_name-configuration|
@@ -12,9 +12,9 @@ Table of Contents                             *goodies.nvim-table-of-contents*
   - About the author   |goodies.nvim-placeholder_plugin_name-about-the-author|
 
 ==============================================================================
-1. PLACEHOLDER_plugin_name              *goodies.nvim-placeholder_plugin_name*
+1. goodies.nvim              *goodies.nvim-placeholder_plugin_name*
 
-PLACEHOLDER_plugin_desc
+
 
 - |goodies.nvim-features|
 - |goodies.nvim-installation|
@@ -34,12 +34,12 @@ INSTALLATION               *goodies.nvim-placeholder_plugin_name-installation*
 >lua
     -- lazy.nvim
     {
-        "chrisgrieser/PLACEHOLDER_plugin_name",
+        "chrisgrieser/goodies.nvim",
     },
     
     -- packer
     use {
-        "chrisgrieser/PLACEHOLDER_plugin_name",
+        "chrisgrieser/goodies.nvim",
     }
 <
 
@@ -48,7 +48,7 @@ CONFIGURATION             *goodies.nvim-placeholder_plugin_name-configuration*
 
 >lua
     -- default settings
-    require("PLACEHOLDER_plugin_name_short").setup {
+    require("goodies").setup {
         enabled = true,
     }
 <

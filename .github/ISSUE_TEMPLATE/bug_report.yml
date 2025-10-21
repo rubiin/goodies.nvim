@@ -53,7 +53,7 @@ body:
       value: |
         local spec = {
         	{
-        		"PLACEHOLDER_plugin_repo",
+        		"origin	git@github.com:rubiin/goodies.nvim",
         		opts = {}, -- insert config here
         	},
         }
