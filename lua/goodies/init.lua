@@ -14,6 +14,8 @@ M.open_url = utils.open_url
 M.comment_hr = utils.comment_hr
 M.code_runner = utils.code_runner
 M.run_file = utils.run_file
+M.word_count = utils.word_count
+
 
 --------------------------------------------------------------------------------
 return M
