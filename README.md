@@ -87,6 +87,11 @@ Your Neovim config can easily get cluttered with one-off helpers, commands, or s
 
 ---
 
+### Misc
+* **`M.word_count()`**
+Utility function to count the number of words in the current buffer or visual selection.
+
+
 ## 🔑 Suggested Keymaps
 
 Add something like this to your `init.lua` or `keymaps.lua`:

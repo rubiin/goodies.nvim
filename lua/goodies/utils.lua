@@ -13,6 +13,39 @@ local fn, cmd = vim.fn, vim.cmd
 
 local config = require("goodies.config")
 
+-- Count words in a given list of lines
+local function count_words(lines)
+	local count = 0
+	for _, line in ipairs(lines) do
+		for _ in string.gmatch(line, "%S+") do
+			count = count + 1
+		end
+	end
+	return count
+end
+
+-- Counts the words in a buffer
+---@return number
+function M.word_count()
+	local mode = vim.fn.mode()
+	local lines
+
+	if mode == "v" or mode == "V" or mode == "\22" then
+		-- Visual mode: get selected lines
+		local start_pos = vim.fn.getpos("'<")
+		local end_pos = vim.fn.getpos("'>")
+		local start_line = start_pos[2] - 1 -- Lua index starts at 0
+		local end_line = end_pos[2]
+		lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
+	else
+		-- Normal mode: use the whole buffer
+		lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	end
+
+	local wc = count_words(lines)
+	return wc
+end
+
 -- Checks if a list contains a value.
 ---@param list table
 ---@param val any
