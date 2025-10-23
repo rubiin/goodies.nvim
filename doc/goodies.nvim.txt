@@ -96,8 +96,10 @@ URL HELPERS ~
 
 MISC ~
 
-- **M.word_count()**
-    Utility function to count the number of words in the current buffer or visual selection.
+- **M.word_count()** Utility function to count the number of words in the current
+    buffer or visual selection.
+- **M.auto_normal()** Enable this somewhere in your config or add a keymap to
+    activate it. Automatically exit insert mode after a period of inactivity.
 
 
 SUGGESTED KEYMAPS                *goodies.nvim-goodies.nvim-suggested-keymaps*
