@@ -18,8 +18,6 @@
 This plugin bundles several lightweight but practical functions that improve everyday Neovim usage.
 Each function is **self-contained**, designed to be mapped to a keybinding, and focuses on **quality-of-life** enhancements — things that make editing faster, cleaner, or more delightful.
 
-Originally written by [**Rubin Bhandari**](https://github.com/rubiin).
-
 ---
 
 ## 🧠 Why?
