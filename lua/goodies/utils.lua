@@ -391,4 +391,25 @@ function M.add_author_details()
 	vim.notify("✅ Added author details")
 end
 
+-- Automatically exit insert mode after a period of inactivity
+function M.auto_normal()
+	local ms = config.config.auto_normal.timeout or 3000 -- timeout in ms
+	local timer = vim.loop.new_timer()
+
+	local function schedule_stop()
+		timer:stop()
+		timer:start(
+			ms,
+			0,
+			vim.schedule_wrap(function()
+				if vim.api.nvim_get_mode().mode == "i" then vim.cmd("stopinsert") end
+			end)
+		)
+	end
+
+	-- Run on every key press
+	local ns = vim.api.nvim_create_namespace("auto_normal")
+	vim.on_key(schedule_stop, ns)
+end
+
 return M

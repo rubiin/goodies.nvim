@@ -89,6 +89,9 @@ Your Neovim config can easily get cluttered with one-off helpers, commands, or s
 * **`M.word_count()`**
 Utility function to count the number of words in the current buffer or visual selection.
 
+* **`M.auto_normal()`**
+  Enable this somewhere in your config or add a keymap to activate it.
+  Automatically exit insert mode after a period of inactivity.
 
 ## 🔑 Suggested Keymaps
 

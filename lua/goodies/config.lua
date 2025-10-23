@@ -9,6 +9,9 @@ local defaultConfig = {
 		twitter = "",
 		name = "",
 	},
+	auto_normal = {
+		timeout = 3000,
+	},
 }
 
 M.config = defaultConfig
