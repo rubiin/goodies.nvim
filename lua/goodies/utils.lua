@@ -412,4 +412,79 @@ function M.auto_normal()
 	vim.on_key(schedule_stop, ns)
 end
 
+local LANGS = {
+	python = "py",
+}
+
+local SHELLS = {
+	sh = { "#! /usr/bin/env bash" },
+	py = { "#! /usr/bin/env python3" },
+	scala = { "#! /usr/bin/env scala" },
+	tcl = { "#! /usr/bin/env tclsh" },
+	lua = {
+		"#! /bin/sh",
+		"_=[[",
+		'exec lua "$0" "$@"',
+		"]]",
+	},
+}
+
+-- Extracted logic into a separate function
+function M.insert_hashbang()
+	local extension = vim.fn.expand("%:e")
+
+	if extension == "" then extension = LANGS[vim.bo.filetype] or vim.bo.filetype end
+
+	local hb = SHELLS[extension]
+	if hb then
+		hb[#hb + 1] = ""
+		vim.api.nvim_buf_set_lines(0, 0, 0, false, hb)
+
+		vim.api.nvim_create_autocmd("BufWritePost", {
+			command = "silent !chmod u+x %",
+			buffer = 0,
+			once = true,
+		})
+	else
+		vim.notify("No hashbang found for ." .. extension, vim.log.levels.WARN)
+	end
+end
+
+function M.parse_env_file(filepath)
+	-- Check if file exists
+	local file = io.open(filepath, "r")
+	if not file then return {} end
+
+	local env = {}
+
+	-- Read file line by line
+	for line in file:lines() do
+		-- Skip empty lines and comments
+		if line:match("^%s*[^#]") then
+			-- Remove leading/trailing whitespace
+			line = line:match("^%s*(.-)%s*$")
+
+			-- Remove optional "export" keyword
+			line = line:gsub("^export%s+", "")
+
+			-- Find the first equals sign
+			local pos = line:find("=")
+
+			if pos then
+				local key = line:sub(1, pos - 1):match("^%s*(.-)%s*$")
+				local value = line:sub(pos + 1):match("^%s*(.-)%s*$")
+
+				-- Remove quotes if they exist
+				if value:match('^".*"$') or value:match("^'.*'$") then value = value:sub(2, -2) end
+
+				-- Store in environment table
+				env[key] = value
+			end
+		end
+	end
+
+	file:close()
+	return env
+end
+
 return M
