@@ -487,4 +487,23 @@ function M.parse_env_file(filepath)
 	return env
 end
 
+--- Insert `s` at end of current line without moving cursor. minimal repro of put_at_end plugin
+--- @param s string the string to append
+function M.append_to_eol(s)
+	local bufnr = vim.api.nvim_get_current_buf()
+	local row = vim.api.nvim_win_get_cursor(0)[1] -- 1‑based line number
+	local line = vim.api.nvim_buf_get_lines(bufnr, row - 1, row, false)[1]
+	if not line then return end
+	-- don't do anything if already ends with s
+	if line:sub(-#s) == s then return end
+	-- compute new line text
+	local new_line = line .. s
+	-- set line
+	vim.api.nvim_buf_set_lines(bufnr, row - 1, row, false, { new_line })
+	-- Restore cursor position (same column)
+	-- column = current column
+	local col = vim.api.nvim_win_get_cursor(0)[2]
+	vim.api.nvim_win_set_cursor(0, { row, col })
+end
+
 return M

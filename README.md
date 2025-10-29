@@ -93,6 +93,11 @@ Utility function to count the number of words in the current buffer or visual se
   Enable this somewhere in your config or add a keymap to activate it.
   Automatically exit insert mode after a period of inactivity.
 
+* **`M.put_at_end(s)`**
+  Enable this somewhere in your config or add a keymap to activate it.
+  Inserts `s` at end of current line without moving cursor.
+  @param s string the string to append
+
 ## 🔑 Suggested Keymaps
 
 Add something like this to your `init.lua` or `keymaps.lua`:
@@ -104,6 +109,9 @@ vim.keymap.set("n", "<leader>ch", goodies.comment_hr, { desc = "Insert comment H
 vim.keymap.set("n", "<leader>ru", goodies.code_runner, { desc = "Run current file" })
 vim.keymap.set("n", "gx", goodies.open_url, { desc = "Open URL under cursor" })
 vim.keymap.set("n", "<leader>yy",goodies.add_author_details, { desc = "Add author details" })
+vim.keymap.set("n", "<leader>zz", function()
+    goodies.append_to_eol(",")
+end, { desc = "Put , at end of line" })
 ```
 
 ---
