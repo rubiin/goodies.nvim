@@ -9,7 +9,11 @@
 -- the helper functions included here, and should be assigned to a keymap for easy access.
 
 local M = {}
-local fn, cmd = vim.fn, vim.cmd
+
+local fn = vim.fn
+local api = vim.api
+local cmd = vim.cmd
+local uv = vim.uv or vim.loop
 
 local config = require("goodies.config")
 
@@ -27,23 +31,22 @@ end
 -- Counts the words in a buffer
 ---@return number
 function M.word_count()
-	local mode = vim.fn.mode()
+	local mode = fn.mode()
 	local lines
 
 	if mode == "v" or mode == "V" or mode == "\22" then
 		-- Visual mode: get selected lines
-		local start_pos = vim.fn.getpos("'<")
-		local end_pos = vim.fn.getpos("'>")
+		local start_pos = fn.getpos("'<")
+		local end_pos = fn.getpos("'>")
 		local start_line = start_pos[2] - 1 -- Lua index starts at 0
 		local end_line = end_pos[2]
-		lines = vim.api.nvim_buf_get_lines(0, start_line, end_line, false)
+		lines = api.nvim_buf_get_lines(0, start_line, end_line, false)
 	else
 		-- Normal mode: use the whole buffer
-		lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+		lines = api.nvim_buf_get_lines(0, 0, -1, false)
 	end
 
-	local wc = count_words(lines)
-	return wc
+	return count_words(lines)
 end
 
 -- Checks if a list contains a value.
@@ -70,18 +73,19 @@ end
 function M.comment_hr()
 	local comment_str = get_comment_str()
 	if not comment_str then return end
-	local startLn = vim.api.nvim_win_get_cursor(0)[1]
+	local startLn = api.nvim_win_get_cursor(0)[1]
 
 	-- determine indent
 	local ln = startLn
 	local line, indent
 	repeat
-		line = vim.api.nvim_buf_get_lines(0, ln - 1, ln, true)[1]
+		line = api.nvim_buf_get_lines(0, ln - 1, ln, true)[1]
 		indent = line:match("^%s*")
 		ln = ln - 1
 	until line ~= "" or ln == 0
 
-	local indent_length = vim.bo.expandtab and #indent or #indent * vim.bo.tabstop
+	local bo = vim.bo
+	local indent_length = bo.expandtab and #indent or #indent * bo.tabstop
 	local com_str_length = #(comment_str:format(""))
 	local text_width = vim.o.textwidth > 0 and vim.o.textwidth or 80
 	local hr_length = text_width - (indent_length + com_str_length)
@@ -93,30 +97,30 @@ function M.comment_hr()
 
 	-- filetype-specific padding
 	local formatter_want_padding = { "python", "css", "scss" }
-	if not vim.tbl_contains(formatter_want_padding, vim.bo.ft) then
+	if not vim.tbl_contains(formatter_want_padding, bo.filetype) then
 		hr_with_omment = hr_with_omment:gsub(" ", hr_char)
 	end
 	local fullLine = indent .. hr_with_omment
 
 	-- append lines & move
-	vim.api.nvim_buf_set_lines(0, startLn, startLn, true, { fullLine, "" })
-	vim.api.nvim_win_set_cursor(0, { startLn + 1, #indent })
+	api.nvim_buf_set_lines(0, startLn, startLn, true, { fullLine, "" })
+	api.nvim_win_set_cursor(0, { startLn + 1, #indent })
 end
 
-function M.simple_substitute(cmd)
-	cmd = cmd:gsub("%%", vim.fn.expand("%"))
-	cmd = cmd:gsub("$fileBase", vim.fn.expand("%:r"))
-	cmd = cmd:gsub("$filePath", vim.fn.expand("%:p"))
-	cmd = cmd:gsub("$file", vim.fn.expand("%"))
-	cmd = cmd:gsub("$dir", vim.fn.expand("%:p:h"))
-	cmd = cmd:gsub("#", vim.fn.expand("#"))
-	cmd = cmd:gsub("$altFile", vim.fn.expand("#"))
+function M.simple_substitute(command)
+	command = command:gsub("%%", fn.expand("%"))
+	command = command:gsub("$fileBase", fn.expand("%:r"))
+	command = command:gsub("$filePath", fn.expand("%:p"))
+	command = command:gsub("$file", fn.expand("%"))
+	command = command:gsub("$dir", fn.expand("%:p:h"))
+	command = command:gsub("#", fn.expand("#"))
+	command = command:gsub("$altFile", fn.expand("#"))
 
-	return cmd
+	return command
 end
 
 function M.code_runner()
-	local file_extension = vim.fn.expand("%:e")
+	local file_extension = fn.expand("%:e")
 	local selected_cmd = ""
 	local term_cmd = "vsplit term://"
 	local supported_filetypes = {
@@ -183,11 +187,11 @@ function M.code_runner()
 			)
 		elseif #choices == 1 then
 			selected_cmd = supported_filetypes[file_extension][choices[1]]
-			vim.cmd(term_cmd .. substitute(selected_cmd))
+			cmd(term_cmd .. M.simple_substitute(selected_cmd))
 		else
 			vim.ui.select(choices, { prompt = "Choose a command: " }, function(choice)
 				selected_cmd = supported_filetypes[file_extension][choice]
-				if selected_cmd then vim.cmd(term_cmd .. substitute(selected_cmd)) end
+				if selected_cmd then cmd(term_cmd .. M.simple_substitute(selected_cmd)) end
 			end)
 		end
 	else
@@ -285,14 +289,14 @@ function M.open_at_regex_101()
 		cmd.TSTextobjectSelect("@regex.outer")
 		normal('"zy')
 		cmd.TSTextobjectSelect("@regex.inner") -- reselect for easier pasting
-		text = vim.fn.getreg("z")
+		text = fn.getreg("z")
 		pattern = text:match("/(.*)/")
 		flags = text:match("/.*/(%l*)") or "gm"
-		replace = vim.api.nvim_get_current_line():match('replace ?%(/.*/.*, ?"(.-)"')
+		replace = api.nvim_get_current_line():match('replace ?%(/.*/.*, ?"(.-)"%')
 	elseif lang == "python" then
 		normal('"zyi"vi"') -- yank & reselect inside quotes
 		pattern = fn.getreg("z")
-		local flagInLine = vim.api.nvim_get_current_line():match("re%.([MIDSUA])")
+		local flagInLine = api.nvim_get_current_line():match("re%.([MIDSUA])")
 		flags = flagInLine and "g" .. flagInLine:gsub("D", "S"):lower() or "g"
 	end
 
@@ -316,7 +320,7 @@ function M.cowboy()
 	local ok = true
 	for _, key in ipairs { "h", "j", "k", "l", "+", "-" } do
 		local count = 0
-		local timer = assert(vim.loop.new_timer())
+		local timer = assert(uv.new_timer())
 		local map = key
 		vim.keymap.set("n", key, function()
 			if vim.v.count > 0 then count = 0 end
@@ -372,21 +376,21 @@ function M.add_author_details()
 		author.twitter
 	)
 
-	local bufnr = vim.api.nvim_get_current_buf()
+	local bufnr = api.nvim_get_current_buf()
 	-- Get existing buffer lines
-	local existing_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+	local existing_lines = api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
 	-- Split the replacement string into lines
 	local replacement_lines = {}
 	for line in comment_details:gmatch("[^\r\n]+") do
-		table.insert(replacement_lines, line)
+		replacement_lines[#replacement_lines + 1] = line
 	end
 
 	-- Insert the new lines at the beginning of the buffer
-	vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, replacement_lines)
+	api.nvim_buf_set_lines(bufnr, 0, 0, false, replacement_lines)
 
 	-- Append the existing lines after the new lines
-	vim.api.nvim_buf_set_lines(bufnr, #replacement_lines, -1, false, existing_lines)
+	api.nvim_buf_set_lines(bufnr, #replacement_lines, -1, false, existing_lines)
 
 	vim.notify("✅ Added author details")
 end
@@ -394,7 +398,7 @@ end
 -- Automatically exit insert mode after a period of inactivity
 function M.auto_normal()
 	local ms = config.config.auto_normal.timeout or 3000 -- timeout in ms
-	local timer = vim.loop.new_timer()
+	local timer = uv.new_timer()
 
 	local function schedule_stop()
 		timer:stop()
@@ -402,13 +406,13 @@ function M.auto_normal()
 			ms,
 			0,
 			vim.schedule_wrap(function()
-				if vim.api.nvim_get_mode().mode == "i" then vim.cmd("stopinsert") end
+				if api.nvim_get_mode().mode == "i" then cmd("stopinsert") end
 			end)
 		)
 	end
 
 	-- Run on every key press
-	local ns = vim.api.nvim_create_namespace("auto_normal")
+	local ns = api.nvim_create_namespace("auto_normal")
 	vim.on_key(schedule_stop, ns)
 end
 
@@ -431,16 +435,16 @@ local SHELLS = {
 
 -- Extracted logic into a separate function
 function M.insert_hashbang()
-	local extension = vim.fn.expand("%:e")
+	local extension = fn.expand("%:e")
 
 	if extension == "" then extension = LANGS[vim.bo.filetype] or vim.bo.filetype end
 
 	local hb = SHELLS[extension]
 	if hb then
 		hb[#hb + 1] = ""
-		vim.api.nvim_buf_set_lines(0, 0, 0, false, hb)
+		api.nvim_buf_set_lines(0, 0, 0, false, hb)
 
-		vim.api.nvim_create_autocmd("BufWritePost", {
+		api.nvim_create_autocmd("BufWritePost", {
 			command = "silent !chmod u+x %",
 			buffer = 0,
 			once = true,
@@ -490,20 +494,20 @@ end
 --- Insert `s` at end of current line without moving cursor. minimal repro of put_at_end plugin
 --- @param s string the string to append
 function M.append_to_eol(s)
-	local bufnr = vim.api.nvim_get_current_buf()
-	local row = vim.api.nvim_win_get_cursor(0)[1] -- 1‑based line number
-	local line = vim.api.nvim_buf_get_lines(bufnr, row - 1, row, false)[1]
+	local bufnr = api.nvim_get_current_buf()
+	local row = api.nvim_win_get_cursor(0)[1] -- 1‑based line number
+	local line = api.nvim_buf_get_lines(bufnr, row - 1, row, false)[1]
 	if not line then return end
 	-- don't do anything if already ends with s
 	if line:sub(-#s) == s then return end
 	-- compute new line text
 	local new_line = line .. s
 	-- set line
-	vim.api.nvim_buf_set_lines(bufnr, row - 1, row, false, { new_line })
+	api.nvim_buf_set_lines(bufnr, row - 1, row, false, { new_line })
 	-- Restore cursor position (same column)
 	-- column = current column
-	local col = vim.api.nvim_win_get_cursor(0)[2]
-	vim.api.nvim_win_set_cursor(0, { row, col })
+	local col = api.nvim_win_get_cursor(0)[2]
+	api.nvim_win_set_cursor(0, { row, col })
 end
 
 return M
