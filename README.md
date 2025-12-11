@@ -137,6 +137,57 @@ With **lazy.nvim**:
 
 ---
 
+## Alternative Installers
+
+### packer.nvim
+
+If you use `packer.nvim` you can add the plugin with a `use` call. You may
+choose to lazy-load it with `cmd`, `ft`, `event`, etc. Example:
+
+```lua
+use {
+  "rubiin/goodies.nvim",
+  -- lazy-load options (optional): cmd = {"SomeCommand"}, ft = {"lua"}, event = "BufReadPre"
+  event = "VeryLazy",
+  config = function()
+    require("goodies").setup({
+      author = {
+        name = "Your Name",
+        email = "your.email@example.com",
+        github = "yourusername",
+        twitter = "yourhandle",
+      },
+      auto_normal = { timeout = 3000 },
+    })
+  end,
+}
+```
+
+### vim-plug
+
+For `vim-plug` add the plugin in your `init.vim` and call the Lua setup from
+your `init.lua` or an `after/plugin` file. Example:
+
+```vim
+Plug 'rubiin/goodies.nvim'
+```
+
+Then in Lua (e.g. `after/plugin/goodies.lua` or `init.lua`):
+
+```lua
+require("goodies").setup({
+  author = {
+    name = "Your Name",
+    email = "your.email@example.com",
+    github = "yourusername",
+    twitter = "yourhandle",
+  },
+  auto_normal = { timeout = 3000 },
+})
+```
+
+---
+
 ## 🧃 Supported Filetypes (for Code Runner)
 
 * `c`, `cpp`, `cs`, `go`, `java`, `js`, `ts`, `py`, `rs`, `php`, `r`, `jl`, `rb`, `pl`, `html`
