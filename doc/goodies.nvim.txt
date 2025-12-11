@@ -1,4 +1,4 @@
-*goodies.nvim.txt*           For Neovim           Last change: 2025 October 29
+*goodies.nvim.txt*           For Neovim          Last change: 2025 December 11
 
 ==============================================================================
 Table of Contents                             *goodies.nvim-table-of-contents*
@@ -9,6 +9,7 @@ Table of Contents                             *goodies.nvim-table-of-contents*
   - Features                              |goodies.nvim-goodies.nvim-features|
   - Suggested Keymaps            |goodies.nvim-goodies.nvim-suggested-keymaps|
   - Installation                      |goodies.nvim-goodies.nvim-installation|
+  - Alternative Installers  |goodies.nvim-goodies.nvim-alternative-installers|
   - Supported Filetypes (for Code Runner)|goodies.nvim-goodies.nvim-supported-filetypes-(for-code-runner)|
   - Notes                                    |goodies.nvim-goodies.nvim-notes|
   - ‍ Author                          |goodies.nvim-goodies.nvim-‍-author|
@@ -139,6 +140,59 @@ With **lazy.nvim**:
         }
       }
     }
+<
+
+------------------------------------------------------------------------------
+
+ALTERNATIVE INSTALLERS      *goodies.nvim-goodies.nvim-alternative-installers*
+
+
+PACKER.NVIM ~
+
+If you use `packer.nvim` you can add the plugin with a `use` call. You may
+choose to lazy-load it with `cmd`, `ft`, `event`, etc. Example:
+
+>lua
+    use {
+      "rubiin/goodies.nvim",
+      -- lazy-load options (optional): cmd = {"SomeCommand"}, ft = {"lua"}, event = "BufReadPre"
+      event = "VeryLazy",
+      config = function()
+        require("goodies").setup({
+          author = {
+            name = "Your Name",
+            email = "your.email@example.com",
+            github = "yourusername",
+            twitter = "yourhandle",
+          },
+          auto_normal = { timeout = 3000 },
+        })
+      end,
+    }
+<
+
+
+VIM-PLUG ~
+
+For `vim-plug` add the plugin in your `init.vim` and call the Lua setup from
+your `init.lua` or an `after/plugin` file. Example:
+
+>vim
+    Plug 'rubiin/goodies.nvim'
+<
+
+Then in Lua (e.g. `after/plugin/goodies.lua` or `init.lua`):
+
+>lua
+    require("goodies").setup({
+      author = {
+        name = "Your Name",
+        email = "your.email@example.com",
+        github = "yourusername",
+        twitter = "yourhandle",
+      },
+      auto_normal = { timeout = 3000 },
+    })
 <
 
 ------------------------------------------------------------------------------
